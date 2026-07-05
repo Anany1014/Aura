@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura — Startup Idea Discovery Engine</title>
+    <meta name="description"
+        content="Upload your files or ideas, and let Aura generate innovative startup concepts using semantic memory traversal.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+
+<body>
+    <div class="dashboard-container">
+
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <div class="logo-icon">🔮</div>
+                <div>
+                    <h1>Aura</h1>
+                    <p>Semantic Memory &amp; Lateral Startup Idea Discovery</p>
+                </div>
+            </div>
+            <div id="system-badge" class="system-mode-badge">
+                <span class="pulse-dot">●</span>
+                <span id="mode-text">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+
+            <!-- Left Column: Upload & Controls -->
+            <div class="left-column">
+
+                <!-- Document Upload Panel -->
+                <div class="glass-panel">
+                    <h2 class="panel-title">
+                        <span class="title-emoji">📤</span> Upload Idea or Document
+                    </h2>
+                    <p class="panel-subtitle">
+                        Upload a PDF, Word Doc, TXT file <strong>–or–</strong> write your idea directly below.
+                        Aura will parse it, index it in semantic memory, and generate a novel startup concept from it.
+                    </p>
+
+                    <div id="upload-alert" style="display: none;"></div>
+
+                    <!-- File Drop Zone -->
+                    <div id="drop-zone" class="drop-zone">
+                        <div class="drop-icon">📁</div>
+                        <div class="drop-label">Drag &amp; drop a file here</div>
+                        <div class="drop-hint">PDF, DOCX, TXT, MD — up to 10 MB</div>
+                        <input type="file" id="file-input" class="file-input-hidden" accept=".pdf,.docx,.txt,.md">
+                        <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">
+                            <span>📂</span> Browse File
+                        </button>
+                        <div id="selected-file-name" class="selected-file-label"></div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="divider-or"><span>or write your idea</span></div>
+
+                    <!-- Text Area -->
+                    <div class="form-group">
+                        <label for="text-idea">💬 Raw Idea / Concept Description</label>
+                        <textarea id="text-idea" rows="4"
+                            placeholder="Describe your startup idea, research insight, or problem statement here..."></textarea>
+                    </div>
+
+                    <!-- Metadata row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="input-title">Title *</label>
+                            <input type="text" id="input-title" placeholder="e.g. AI-Powered Health Router">
+                        </div>
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label for="select-domain">Domain *</label>
+                            <select id="select-domain">
+                                <option value="general">General</option>
+                                <option value="biotech">Biotech</option>
+                                <option value="fintech">Fintech</option>
+                                <option value="civic_tech">Civic Tech</option>
+                                <option value="gaming">Gaming</option>
+                                <option value="sustainability">Sustainability</option>
+                                <option value="edtech">EdTech</option>
+                                <option value="healthtech">HealthTech</option>
+                                <option value="ai_ml">AI / ML</option>
+                                <option value="logistics">Logistics</option>
+                                <option value="deeptech">DeepTech</option>
+                                <option value="consumer">Consumer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="select-type">Node Type *</label>
+                            <select id="select-type">
+                                <option value="document">Document</option>
+                                <option value="startup">Startup</option>
+                                <option value="paper">Research Paper</option>
+                                <option value="patent">Patent</option>
+                                <option value="code">Code / Tech</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="btn-upload" class="btn btn-primary" style="margin-top: 0.75rem;">
+                        <span>🧠</span> Index into Aura Memory
+                    </button>
+
+                    <!-- Ingested nodes list -->
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label>Indexed Memory Nodes (<span id="node-count">0</span>)</label>
+                        <div id="node-list" class="node-collection">
+                            <div class="empty-state" style="padding: 1.5rem 0.5rem; font-size: 0.85rem;">
+                                No nodes indexed yet. Upload a document or write an idea above.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discovery Parameters -->
+                <div class="glass-panel">
+                    <h2 class="panel-title">
+                        <span class="title-emoji">⚙️</span> Discovery Parameters
+                    </h2>
+
+                    <div class="form-group">
+                        <label for="select-seed">Seed Memory Node</label>
+                        <select id="select-seed">
+                            <option value="">-- Random Walk (Auto Seed) --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="range-hops">Maximum Traversal Hops</label>
+                        <div class="slider-container">
+                            <input type="range" id="range-hops" min="2" max="5" value="3">
+                            <span id="label-hops" class="slider-val">3</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="range-penalty">Domain Repeat Penalty</label>
+                        <div class="slider-container">
+                            <input type="range" id="range-penalty" min="0" max="1" step="0.1" value="0.3">
+                            <span id="label-penalty" class="slider-val">0.3</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-discover" class="btn btn-primary" style="margin-top: 1rem;">
+                        <span>⚡</span> Run Discovery Walk
+                    </button>
+                </div>
+
+
+
+            </div>
+
+            <!-- Right Column: Idea Synthesis Display -->
+            <div class="right-column">
+
+                <!-- Loading Panel -->
+                <div id="discovery-status-panel" class="glass-panel" style="display: none;">
+                    <div class="empty-state">
+                        <div class="empty-icon spinning">🔮</div>
+                        <h3>Generating Startup Idea...</h3>
+                        <p style="margin-top: 0.5rem; font-size: 0.86rem; color: var(--text-secondary);">
+                            Walking the semantic graph, maximizing cross-domain distance, synthesizing via LLM...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Idea Result Panel -->
+                <div id="idea-panel" class="glass-panel" style="display: none;">
+
+                    <div class="idea-header">
+                        <div id="idea-verdict" class="idea-verdict-tag">PASS</div>
+                        <div id="idea-title" class="idea-name-text">Startup Concept Name</div>
+                        <div class="idea-meta-row">
+                            <div class="idea-score-indicator">
+                                <span>Critic Score:</span>
+                                <span id="idea-score" class="score-num">8.5</span>
+                                <span class="score-base">/ 10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Idea Detail Blocks -->
+                    <div class="detail-block">
+                        <div class="detail-title">🎯 Problem Statement</div>
+                        <div id="idea-problem" class="detail-content">Details...</div>
+                    </div>
+
+                    <div class="detail-block">
+                        <div class="detail-title">💡 Lateral Solution</div>
+                        <div id="idea-solution" class="detail-content">Details...</div>
+                    </div>
+
+                    <div class="detail-block">
+                        <div class="detail-title">⛓️ Core Cross-Domain Insight</div>
+                        <div id="idea-insight" class="detail-content">Details...</div>
+                    </div>
+
+                    <div class="detail-block">
+                        <div class="detail-title">🏗️ MVP Architecture</div>
+                        <div id="idea-architecture" class="detail-content">Details...</div>
+                    </div>
+
+                    <div class="detail-block">
+                        <div class="detail-title">⚠️ Critic Feasibility &amp; Risks</div>
+                        <div id="idea-risks" class="detail-content">Details...</div>
+                    </div>
+
+                    <!-- Critic Rubric -->
+                    <div style="margin-top: 2rem;">
+                        <h3 class="panel-title" style="border-bottom: none; margin-bottom: 0.5rem;">
+                            <span class="title-emoji">⚖️</span> Critic Rubric Breakdown
+                        </h3>
+                        <div class="critic-grid">
+                            <div class="critic-score-card">
+                                <div class="critic-metric-label">Cross-Domain</div>
+                                <div id="critic-cross-domain" class="critic-metric-num">8.5</div>
+                            </div>
+                            <div class="critic-score-card">
+                                <div class="critic-metric-label">Market Gap</div>
+                                <div id="critic-market-gap" class="critic-metric-num">8.0</div>
+                            </div>
+                            <div class="critic-score-card">
+                                <div class="critic-metric-label">Feasibility</div>
+                                <div id="critic-feasibility" class="critic-metric-num">9.0</div>
+                            </div>
+                        </div>
+                        <div id="critic-explanation" class="critic-explanation-panel">
+                            Explanation details here...
+                        </div>
+                    </div>
+
+                    <!-- Traversal Path -->
+                    <div style="margin-top: 2rem;">
+                        <h3 class="panel-title" style="border-bottom: none; margin-bottom: 0.5rem;">
+                            <span class="title-emoji">🛤️</span> Traversal Path (Semantic Collisions)
+                        </h3>
+                        <div id="traversal-path" class="path-timeline">
+                            <!-- Visual path items generated as timeline list -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-synthesis-state" class="glass-panel">
+                    <div class="empty-state">
+                        <div class="empty-icon">💎</div>
+                        <h3>No Startup Idea Generated Yet</h3>
+                        <p
+                            style="margin-top: 0.5rem; font-size: 0.88rem; color: var(--text-secondary); max-width: 420px; margin-left: auto; margin-right: auto;">
+                            Upload a PDF, Word doc, or describe your idea in the left panel — Aura will index it into
+                            semantic
+                            memory and synthesize an innovative startup concept with cross-domain insights.
+                        </p>
+                        <div class="upload-hint-steps">
+                            <div class="hint-step"><span class="hint-num">1</span> Upload a document or type your idea
+                            </div>
+                            <div class="hint-step"><span class="hint-num">2</span> Click <strong>Index into Aura
+                                    Memory</strong></div>
+                            <div class="hint-step"><span class="hint-num">3</span> Select it as the seed, then click
+                                <strong>Run Discovery Walk</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js?v=2"></script>
+</body>
+
+</html>

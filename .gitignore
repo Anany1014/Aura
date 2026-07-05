@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL support
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Temporary files & assets
+.tmp/
+
+# Google API credentials
+credentials.json
+token.json
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+.env/
+
